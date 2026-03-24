@@ -2,7 +2,7 @@ import { getAllPosts } from "@/src/lib/posts";
 
 export async function GET() {
   const baseUrl = "https://watchdecode.com";
-  const posts = getAllPosts();
+  const posts = await getAllPosts();
 
   const items = posts
     .map((post) => {

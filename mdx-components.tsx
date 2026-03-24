@@ -1,6 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 
-const components: MDXComponents = {
+export const articleMdxComponents: MDXComponents = {
   h1: (props) => (
     <h1
       className="mt-10 text-3xl font-semibold tracking-tight text-zinc-100 first:mt-0"
@@ -25,8 +25,20 @@ const components: MDXComponents = {
     <code className="rounded-md bg-zinc-800 px-1.5 py-0.5 text-sm text-zinc-100" {...props} />
   ),
   hr: (props) => <hr className="my-10 border-zinc-800" {...props} />,
+  table: (props) => (
+    <div className="my-6 overflow-x-auto rounded-lg border border-zinc-800">
+      <table className="w-full min-w-[32rem] border-collapse text-left text-sm text-zinc-300" {...props} />
+    </div>
+  ),
+  thead: (props) => <thead className="bg-zinc-900 text-zinc-200" {...props} />,
+  tbody: (props) => <tbody className="divide-y divide-zinc-800" {...props} />,
+  tr: (props) => <tr {...props} />,
+  th: (props) => (
+    <th className="border-b border-zinc-800 px-4 py-3 text-xs font-semibold uppercase tracking-wide" {...props} />
+  ),
+  td: (props) => <td className="px-4 py-3 align-top text-zinc-300" {...props} />,
 };
 
 export function useMDXComponents(): MDXComponents {
-  return components;
+  return articleMdxComponents;
 }

@@ -1,9 +1,8 @@
-import type { ComponentType } from "react";
+import { createReader } from "@keystatic/core/reader";
 
-import BeginnerMechanicalGuide, {
-  metadata as beginnerMechanicalGuideMetadata,
-} from "@/src/content/posts/beginner-mechanical-watch-buying-guide.mdx";
-import Seiko5Review, { metadata as seiko5ReviewMetadata } from "@/src/content/posts/seiko-5-sports-review.mdx";
+import keystaticConfig from "../../keystatic.config";
+
+const reader = createReader(process.cwd(), keystaticConfig);
 
 export type Category = "Buying Guides" | "Reviews";
 
@@ -20,43 +19,75 @@ export type PostMetadata = {
 export type Post = {
   slug: string;
   metadata: PostMetadata;
-  Component: ComponentType;
+  mdxSource: string;
 };
 
-const posts: Post[] = [
-  {
-    slug: "beginner-mechanical-watch-buying-guide",
-    metadata: beginnerMechanicalGuideMetadata,
-    Component: BeginnerMechanicalGuide,
-  },
-  {
-    slug: "seiko-5-sports-review",
-    metadata: seiko5ReviewMetadata,
-    Component: Seiko5Review,
-  },
-];
+type ResolvedPostEntry = NonNullable<Awaited<ReturnType<typeof reader.collections.posts.read>>>;
 
-export function getAllPosts() {
-  return [...posts].sort(
-    (a, b) => new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime(),
+function estimateReadTime(source: string): string {
+  const words = source.trim().split(/\s+/).filter(Boolean).length;
+  const minutes = Math.max(1, Math.round(words / 200));
+  return `${minutes} min read`;
+}
+
+async function resolveMdxSource(content: string | (() => Promise<string>)): Promise<string> {
+  return typeof content === "string" ? content : await content();
+}
+
+async function toPost(slug: string, entry: ResolvedPostEntry): Promise<Post> {
+  const rawDate = entry.date as string | Date;
+  const publishedAt =
+    typeof rawDate === "string" ? rawDate.slice(0, 10) : rawDate.toISOString().slice(0, 10);
+  const rawTitle = entry.title as unknown as string | { name: string; slug: string };
+  const title = typeof rawTitle === "string" ? rawTitle : rawTitle.name;
+  const mdxSource = await resolveMdxSource(entry.content);
+
+  return {
+    slug,
+    metadata: {
+      title,
+      description: entry.description,
+      publishedAt,
+      author: "WatchDecode",
+      category: entry.category as Category,
+      readTime: estimateReadTime(mdxSource),
+      featured: entry.featured,
+    },
+    mdxSource,
+  };
+}
+
+export async function getAllPosts(): Promise<Post[]> {
+  const slugs = await reader.collections.posts.list();
+  const entries = await Promise.all(
+    slugs.map(async (slug) => {
+      const entry = await reader.collections.posts.read(slug, { resolveLinkedFiles: true });
+      if (!entry) return null;
+      return await toPost(slug, entry);
+    }),
   );
+  return entries
+    .filter((post): post is Post => post !== null)
+    .sort((a, b) => new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime());
 }
 
-export function getFeaturedPosts() {
-  return getAllPosts().filter((post) => post.metadata.featured);
+export async function getFeaturedPosts(): Promise<Post[]> {
+  return (await getAllPosts()).filter((post) => post.metadata.featured);
 }
 
-export function getCategories() {
+export async function getCategories() {
   const counts = new Map<Category, number>();
-  for (const post of getAllPosts()) {
+  for (const post of await getAllPosts()) {
     const current = counts.get(post.metadata.category) ?? 0;
     counts.set(post.metadata.category, current + 1);
   }
   return Array.from(counts.entries()).map(([name, count]) => ({ name, count }));
 }
 
-export function getPostBySlug(slug: string) {
-  return posts.find((post) => post.slug === slug);
+export async function getPostBySlug(slug: string): Promise<Post | null> {
+  const entry = await reader.collections.posts.read(slug, { resolveLinkedFiles: true });
+  if (!entry) return null;
+  return await toPost(slug, entry);
 }
 
 export function isValidCategory(value: string): value is Category {

@@ -3,9 +3,9 @@ import Link from "next/link";
 import { ArticleCard } from "@/src/components/article-card";
 import { getCategories, getFeaturedPosts } from "@/src/lib/posts";
 
-export default function Home() {
-  const featuredPosts = getFeaturedPosts();
-  const categories = getCategories();
+export default async function Home() {
+  const featuredPosts = await getFeaturedPosts();
+  const categories = await getCategories();
 
   return (
     <div className="pb-16">

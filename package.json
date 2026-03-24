@@ -9,13 +9,18 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@keystatic/core": "^0.5.49",
+    "@keystatic/next": "^5.0.4",
+    "@markdoc/markdoc": "^0.5.6",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/react": "^3.1.1",
     "@next/mdx": "^16.2.1",
     "@types/mdx": "^2.0.13",
     "next": "16.2.1",
+    "next-mdx-remote": "^6.0.0",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

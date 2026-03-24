@@ -27,8 +27,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
     params.category && isValidCategory(params.category) ? params.category : undefined;
   const currentPage = Math.max(1, Number.parseInt(params.page ?? "1", 10) || 1);
 
-  const posts = getAllPosts();
-  const categories = getCategories();
+  const posts = await getAllPosts();
+  const categories = await getCategories();
   const filteredPosts = selectedCategory
     ? posts.filter((post) => post.metadata.category === selectedCategory)
     : posts;

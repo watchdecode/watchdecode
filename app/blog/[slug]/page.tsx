@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { MdxPostBody } from "@/src/components/mdx-post-body";
 import { getAllPosts, getPostBySlug } from "@/src/lib/posts";
 
 type BlogPostPageProps = {
@@ -8,14 +9,15 @@ type BlogPostPageProps = {
 };
 
 export async function generateStaticParams() {
-  return getAllPosts().map((post) => ({
+  const posts = await getAllPosts();
+  return posts.map((post) => ({
     slug: post.slug,
   }));
 }
 
 export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return {
@@ -54,13 +56,11 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
-
-  const PostBody = post.Component;
 
   return (
     <article className="container-shell py-16">
@@ -78,7 +78,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </p>
       </header>
       <div className="mx-auto mt-8 max-w-3xl">
-        <PostBody />
+        <MdxPostBody source={post.mdxSource} />
       </div>
     </article>
   );
