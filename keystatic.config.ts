@@ -61,6 +61,11 @@ export default config({
           label: "Featured",
           defaultValue: false,
         }),
+        coverImage: fields.image({
+          label: "Cover image",
+          directory: "public/images/posts",
+          publicPath: "/images/posts/",
+        }),
         content: fields.mdx({
           label: "Body",
         }),

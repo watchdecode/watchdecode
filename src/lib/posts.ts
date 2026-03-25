@@ -32,6 +32,7 @@ export type PostMetadata = {
   readTime: string;
   featured?: boolean;
   affiliateLinks?: AffiliateLink[];
+  coverImage?: string;
 };
 
 export type Post = {
@@ -77,6 +78,7 @@ async function toPost(slug: string, entry: ResolvedPostEntry): Promise<Post> {
       readTime: estimateReadTime(mdxSource),
       featured: entry.featured,
       affiliateLinks: (entry.affiliateLinks as AffiliateLink[] | undefined) ?? [],
+      coverImage: entry.coverImage as string | undefined,
     },
     mdxSource,
   };
