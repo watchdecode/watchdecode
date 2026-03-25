@@ -1,9 +1,10 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { MdxPostBody } from "@/src/components/mdx-post-body";
-import { getAllPosts, getPostBySlug } from "@/src/lib/posts";
+import { getAllPosts, getPostBySlug, normalizePostImagePath } from "@/src/lib/posts";
 import { extractFaqItemsFromMdx } from "@/src/lib/faq";
 import { extractTocItemsFromMdx } from "@/src/lib/toc";
 import { injectAffiliateButtonsIntoMdx } from "@/src/lib/inject-affiliate-links";
@@ -71,6 +72,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const enhancedMdxSource = injectAffiliateButtonsIntoMdx(post.mdxSource, post.metadata.affiliateLinks ?? []);
   const siteUrl = "https://watchdecode.com";
   const pageUrl = `${siteUrl}/blog/${post.slug}`;
+  const coverImage = normalizePostImagePath(post.metadata.coverImage, post.slug);
 
   const articleJsonLd = {
     "@context": "https://schema.org",
@@ -95,7 +97,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         url: `${siteUrl}/opengraph-image`,
       },
     },
-    image: `${siteUrl}/opengraph-image?title=${encodeURIComponent(post.metadata.title)}`,
+    image: coverImage ? `${siteUrl}${coverImage}` : `${siteUrl}/opengraph-image?title=${encodeURIComponent(post.metadata.title)}`,
   };
 
   const fallbackFaqItems = [
@@ -141,6 +143,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
         </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight text-zinc-900">{post.metadata.title}</h1>
         <p className="mt-4 text-zinc-700">{post.metadata.description}</p>
+        {coverImage ? (
+          <div className="mt-6 overflow-hidden rounded-lg border border-zinc-200">
+            <Image
+              src={coverImage}
+              alt={post.metadata.title}
+              width={1200}
+              height={675}
+              className="h-auto w-full object-cover"
+              priority
+            />
+          </div>
+        ) : null}
         <p className="mt-6 text-sm text-zinc-600">
           {new Date(post.metadata.publishedAt).toLocaleDateString("en-US", {
             day: "numeric",

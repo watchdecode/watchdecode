@@ -1,14 +1,28 @@
+import Image from "next/image";
 import Link from "next/link";
 
-import type { Post } from "@/src/lib/posts";
+import { normalizePostImagePath, type Post } from "@/src/lib/posts";
 
 type ArticleCardProps = {
   post: Post;
 };
 
 export function ArticleCard({ post }: ArticleCardProps) {
+  const coverImage = normalizePostImagePath(post.metadata.coverImage, post.slug);
+
   return (
     <article className="rounded-xl border border-zinc-200 bg-zinc-100/60 p-6 transition hover:border-zinc-300">
+      {coverImage ? (
+        <Link href={`/blog/${post.slug}`} className="block overflow-hidden rounded-lg">
+          <Image
+            src={coverImage}
+            alt={post.metadata.title}
+            width={1200}
+            height={675}
+            className="h-auto w-full object-cover"
+          />
+        </Link>
+      ) : null}
       <p className="text-xs uppercase tracking-wide text-zinc-600">
         <Link
           href={`/blog?category=${encodeURIComponent(post.metadata.category)}`}

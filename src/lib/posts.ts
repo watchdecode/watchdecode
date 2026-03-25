@@ -49,6 +49,19 @@ export type AffiliateLink = {
 
 type ResolvedPostEntry = NonNullable<Awaited<ReturnType<typeof reader.collections.posts.read>>>;
 
+export function normalizePostImagePath(path: string | undefined, slug: string): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith("/images/posts/")) return path;
+  if (path.startsWith("/")) return path;
+
+  const legacyContentPrefix = `src/content/posts/${slug}/content/`;
+  if (path.startsWith(legacyContentPrefix)) {
+    return `/images/posts/${slug}/${path.slice(legacyContentPrefix.length)}`;
+  }
+
+  return `/images/posts/${slug}/${path}`;
+}
+
 function estimateReadTime(source: string): string {
   const words = source.trim().split(/\s+/).filter(Boolean).length;
   const minutes = Math.max(1, Math.round(words / 200));

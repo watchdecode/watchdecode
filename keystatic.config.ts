@@ -68,6 +68,12 @@ export default config({
         }),
         content: fields.mdx({
           label: "Body",
+          options: {
+            image: {
+              directory: "public/images/posts",
+              publicPath: "/images/posts/",
+            },
+          },
         }),
       },
     }),
