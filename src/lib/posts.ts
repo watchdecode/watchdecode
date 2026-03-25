@@ -31,12 +31,19 @@ export type PostMetadata = {
   category: Category;
   readTime: string;
   featured?: boolean;
+  affiliateLinks?: AffiliateLink[];
 };
 
 export type Post = {
   slug: string;
   metadata: PostMetadata;
   mdxSource: string;
+};
+
+export type AffiliateLink = {
+  watchName: string;
+  affiliateUrl: string;
+  buttonLabel: string;
 };
 
 type ResolvedPostEntry = NonNullable<Awaited<ReturnType<typeof reader.collections.posts.read>>>;
@@ -69,6 +76,7 @@ async function toPost(slug: string, entry: ResolvedPostEntry): Promise<Post> {
       category: entry.category as Category,
       readTime: estimateReadTime(mdxSource),
       featured: entry.featured,
+      affiliateLinks: (entry.affiliateLinks as AffiliateLink[] | undefined) ?? [],
     },
     mdxSource,
   };

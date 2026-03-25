@@ -6,6 +6,7 @@ import { MdxPostBody } from "@/src/components/mdx-post-body";
 import { getAllPosts, getPostBySlug } from "@/src/lib/posts";
 import { extractFaqItemsFromMdx } from "@/src/lib/faq";
 import { extractTocItemsFromMdx } from "@/src/lib/toc";
+import { injectAffiliateButtonsIntoMdx } from "@/src/lib/inject-affiliate-links";
 
 type BlogPostPageProps = {
   params: Promise<{ slug: string }>;
@@ -67,6 +68,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
   const tocItems = extractTocItemsFromMdx(post.mdxSource);
   const faqItems = extractFaqItemsFromMdx(post.mdxSource);
+  const enhancedMdxSource = injectAffiliateButtonsIntoMdx(post.mdxSource, post.metadata.affiliateLinks ?? []);
   const siteUrl = "https://watchdecode.com";
   const pageUrl = `${siteUrl}/blog/${post.slug}`;
 
@@ -170,7 +172,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       )}
 
       <div className="mx-auto mt-8 max-w-3xl">
-        <MdxPostBody source={post.mdxSource} />
+        <MdxPostBody source={enhancedMdxSource} />
       </div>
 
       <script

@@ -36,6 +36,27 @@ export default config({
           ],
           defaultValue: "Buying Guides",
         }),
+        affiliateLinks: fields.array(
+          fields.object({
+            watchName: fields.text({
+              label: "Watch name",
+            }),
+            affiliateUrl: fields.text({
+              label: "Affiliate URL",
+            }),
+            buttonLabel: fields.text({
+              label: "Button label",
+              defaultValue: "Check Price on Amazon",
+            }),
+          }),
+          {
+            label: "Affiliate links",
+            itemLabel: (props) => {
+              // Keystatic itemLabel receives preview props
+              return props.fields.watchName.value || "Affiliate link";
+            },
+          },
+        ),
         featured: fields.checkbox({
           label: "Featured",
           defaultValue: false,
