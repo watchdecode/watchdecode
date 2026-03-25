@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #09090b;
-  --foreground: #f4f4f5;
+  --background: #ffffff;
+  --foreground: #09090b;
 }
 
 @theme inline {
@@ -23,11 +23,11 @@ body {
 }
 
 .section-title {
-  @apply text-2xl font-semibold tracking-tight text-zinc-100 sm:text-3xl;
+  @apply text-2xl font-semibold tracking-tight text-zinc-900 sm:text-3xl;
 }
 
 .affiliate-block {
-  @apply my-6 flex flex-col gap-4 rounded-xl border border-zinc-800 bg-zinc-900/50 p-5 sm:flex-row sm:items-start;
+  @apply my-6 flex flex-col gap-4 rounded-xl border border-zinc-200 bg-zinc-100/70 p-5 sm:flex-row sm:items-start;
 }
 
 .affiliate-block img {

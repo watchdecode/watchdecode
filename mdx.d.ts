@@ -7,7 +7,14 @@ declare module "*.mdx" {
     description: string;
     publishedAt: string;
     author: string;
-    category: "Buying Guides" | "Reviews";
+    category:
+      | "Buying Guides"
+      | "Reviews"
+      | "Comparisons"
+      | "Watch Brands"
+      | "Budget Picks"
+      | "Luxury Watches"
+      | "Watch Care";
     readTime: string;
     featured?: boolean;
   };

@@ -28,6 +28,11 @@ export default config({
           options: [
             { label: "Buying Guides", value: "Buying Guides" },
             { label: "Reviews", value: "Reviews" },
+            { label: "Comparisons", value: "Comparisons" },
+            { label: "Watch Brands", value: "Watch Brands" },
+            { label: "Budget Picks", value: "Budget Picks" },
+            { label: "Luxury Watches", value: "Luxury Watches" },
+            { label: "Watch Care", value: "Watch Care" },
           ],
           defaultValue: "Buying Guides",
         }),

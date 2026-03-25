@@ -49,8 +49,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
 
   return (
     <div className="container-shell py-16">
-      <h1 className="text-4xl font-semibold tracking-tight text-zinc-100">Watch Articles</h1>
-      <p className="mt-3 max-w-2xl text-zinc-300">
+      <h1 className="text-4xl font-semibold tracking-tight text-zinc-900">Watch Articles</h1>
+      <p className="mt-3 max-w-2xl text-zinc-700">
         Reviews and buying guides designed for people buying watches with real budgets and real-world use in mind.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
@@ -58,8 +58,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           href="/blog"
           className={`rounded-full border px-4 py-1.5 text-sm transition ${
             !selectedCategory
-              ? "border-zinc-300 bg-zinc-200 text-zinc-900"
-              : "border-zinc-700 text-zinc-300 hover:border-zinc-500"
+              ? "border-zinc-200 bg-zinc-100 text-zinc-900"
+              : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300"
           }`}
         >
           All ({posts.length})
@@ -70,8 +70,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             href={`/blog?category=${encodeURIComponent(category.name)}`}
             className={`rounded-full border px-4 py-1.5 text-sm transition ${
               selectedCategory === category.name
-                ? "border-zinc-300 bg-zinc-200 text-zinc-900"
-                : "border-zinc-700 text-zinc-300 hover:border-zinc-500"
+                ? "border-zinc-200 bg-zinc-100 text-zinc-900"
+                : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-300"
             }`}
           >
             {category.name} ({category.count})
@@ -83,15 +83,17 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           <ArticleCard key={post.slug} post={post} />
         ))}
       </div>
-      <div className="mt-10 flex items-center justify-between border-t border-zinc-800 pt-6">
-        <p className="text-sm text-zinc-400">
+      <div className="mt-10 flex items-center justify-between border-t border-zinc-200 pt-6">
+        <p className="text-sm text-zinc-600">
           Page {safePage} of {totalPages}
         </p>
         <div className="flex items-center gap-3">
           <Link
             href={pageHref(Math.max(1, safePage - 1))}
             className={`rounded-md border px-3 py-1.5 text-sm ${
-              safePage === 1 ? "pointer-events-none border-zinc-800 text-zinc-600" : "border-zinc-700 text-zinc-200"
+              safePage === 1
+                ? "pointer-events-none border-zinc-200 text-zinc-500"
+                : "border-zinc-200 text-zinc-700 hover:border-zinc-300"
             }`}
           >
             Previous
@@ -103,8 +105,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
                 href={pageHref(pageNumber)}
                 className={`rounded-md border px-3 py-1.5 text-sm ${
                   pageNumber === safePage
-                    ? "border-zinc-300 bg-zinc-200 text-zinc-900"
-                    : "border-zinc-700 text-zinc-200 hover:border-zinc-500"
+                    ? "border-zinc-200 bg-zinc-100 text-zinc-900"
+                    : "border-zinc-200 text-zinc-700 hover:border-zinc-300"
                 }`}
               >
                 {pageNumber}
@@ -115,8 +117,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
             href={pageHref(Math.min(totalPages, safePage + 1))}
             className={`rounded-md border px-3 py-1.5 text-sm ${
               safePage === totalPages
-                ? "pointer-events-none border-zinc-800 text-zinc-600"
-                : "border-zinc-700 text-zinc-200"
+                ? "pointer-events-none border-zinc-200 text-zinc-500"
+                : "border-zinc-200 text-zinc-700 hover:border-zinc-300"
             }`}
           >
             Next

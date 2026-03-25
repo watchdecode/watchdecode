@@ -25,14 +25,14 @@ export default async function OpenGraphImage({ searchParams }: OpenGraphImagePro
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          background: "#09090b",
-          color: "#f4f4f5",
+          background: "#ffffff",
+          color: "#09090b",
           padding: "64px",
         }}
       >
-        <div style={{ fontSize: 32, color: "#a1a1aa", letterSpacing: 1.5 }}>WatchDecode</div>
+        <div style={{ fontSize: 32, color: "#6b7280", letterSpacing: 1.5 }}>WatchDecode</div>
         <div style={{ fontSize: 68, lineHeight: 1.1, maxWidth: "1000px", fontWeight: 700 }}>{heading}</div>
-        <div style={{ fontSize: 26, color: "#d4d4d8" }}>watchdecode.com</div>
+        <div style={{ fontSize: 26, color: "#6b7280" }}>watchdecode.com</div>
       </div>
     ),
     size,

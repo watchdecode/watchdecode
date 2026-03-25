@@ -4,7 +4,24 @@ import keystaticConfig from "../../keystatic.config";
 
 const reader = createReader(process.cwd(), keystaticConfig);
 
-export type Category = "Buying Guides" | "Reviews";
+export type Category =
+  | "Buying Guides"
+  | "Reviews"
+  | "Comparisons"
+  | "Watch Brands"
+  | "Budget Picks"
+  | "Luxury Watches"
+  | "Watch Care";
+
+export const ALL_CATEGORIES: Category[] = [
+  "Buying Guides",
+  "Reviews",
+  "Comparisons",
+  "Watch Brands",
+  "Budget Picks",
+  "Luxury Watches",
+  "Watch Care",
+];
 
 export type PostMetadata = {
   title: string;
@@ -76,12 +93,15 @@ export async function getFeaturedPosts(): Promise<Post[]> {
 }
 
 export async function getCategories() {
-  const counts = new Map<Category, number>();
+  const counts = new Map<Category, number>(ALL_CATEGORIES.map((c) => [c, 0]));
   for (const post of await getAllPosts()) {
     const current = counts.get(post.metadata.category) ?? 0;
     counts.set(post.metadata.category, current + 1);
   }
-  return Array.from(counts.entries()).map(([name, count]) => ({ name, count }));
+  return ALL_CATEGORIES.map((name) => ({
+    name,
+    count: counts.get(name) ?? 0,
+  }));
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -91,5 +111,13 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 export function isValidCategory(value: string): value is Category {
-  return value === "Buying Guides" || value === "Reviews";
+  return (
+    value === "Buying Guides" ||
+    value === "Reviews" ||
+    value === "Comparisons" ||
+    value === "Watch Brands" ||
+    value === "Budget Picks" ||
+    value === "Luxury Watches" ||
+    value === "Watch Care"
+  );
 }
