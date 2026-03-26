@@ -5,6 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
+      disallow: "/keystatic/",
     },
     sitemap: "https://watchdecode.com/sitemap.xml",
   };
