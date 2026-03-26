@@ -79,8 +79,8 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
         ))}
       </div>
       <div className="mt-10 grid gap-6 md:grid-cols-2">
-        {paginatedPosts.map((post) => (
-          <ArticleCard key={post.slug} post={post} />
+        {paginatedPosts.map((post, index) => (
+          <ArticleCard key={post.slug} post={post} priority={index === 0} />
         ))}
       </div>
       <div className="mt-10 flex items-center justify-between border-t border-zinc-200 pt-6">

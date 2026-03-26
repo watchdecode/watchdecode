@@ -5,9 +5,15 @@ import { normalizePostImagePath, type Post } from "@/src/lib/posts";
 
 type ArticleCardProps = {
   post: Post;
+  /**
+   * Marks this card as the first above-the-fold image candidate (LCP).
+   * We only enable eager/high priority for the first visible card to avoid
+   * over-fetching.
+   */
+  priority?: boolean;
 };
 
-export function ArticleCard({ post }: ArticleCardProps) {
+export function ArticleCard({ post, priority = false }: ArticleCardProps) {
   const coverImage = normalizePostImagePath(post.metadata.coverImage, post.slug);
 
   return (
@@ -20,6 +26,10 @@ export function ArticleCard({ post }: ArticleCardProps) {
             width={1200}
             height={675}
             className="h-auto w-full object-cover"
+            priority={priority}
+            loading={priority ? "eager" : "lazy"}
+            fetchPriority={priority ? "high" : undefined}
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
         </Link>
       ) : null}
