@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "validate:content": "node scripts/validate-content-setup.mjs",
+    "prebuild": "npm run validate:content",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

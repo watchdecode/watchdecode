@@ -20,6 +20,13 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Blog Content Guardrails
+
+- Blog posts are stored as file-based MDX entries in `src/content/posts/*.mdx`.
+- Keystatic collection path must remain `path: "src/content/posts/*"` in `keystatic.config.ts`.
+- Run `npm run validate:content` to verify content discovery setup.
+- `npm run build` runs this check automatically via `prebuild` and fails early if the setup is broken.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
