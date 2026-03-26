@@ -5,10 +5,10 @@ import { normalizePostImagePath, type Post } from "@/src/lib/posts";
 
 type ArticleCardProps = {
   post: Post;
-  index: number;
+  index?: number;
 };
 
-export function ArticleCard({ post, index }: ArticleCardProps) {
+export function ArticleCard({ post, index = 0 }: ArticleCardProps) {
   const coverImage = normalizePostImagePath(post.metadata.coverImage, post.slug);
 
   return (
