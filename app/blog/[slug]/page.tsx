@@ -151,7 +151,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               width={1200}
               height={675}
               className="h-auto w-full object-cover"
-              priority
+              priority={true}
               loading="eager"
               fetchPriority="high"
               sizes="(max-width: 768px) 100vw, 768px"
