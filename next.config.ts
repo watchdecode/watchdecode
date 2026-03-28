@@ -10,6 +10,10 @@ const withMDX = createMDX({
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+  /** Keystatic reads MDX from disk at runtime; include them in the serverless trace on Vercel. */
+  outputFileTracingIncludes: {
+    "/*": ["src/content/posts/**/*.mdx"],
+  },
   async redirects() {
     return [
       {

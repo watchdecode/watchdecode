@@ -1,8 +1,14 @@
+import path from "node:path";
+import { existsSync } from "node:fs";
+
 import { createReader } from "@keystatic/core/reader";
 
 import keystaticConfig from "../../keystatic.config";
 
-const reader = createReader(process.cwd(), keystaticConfig);
+/** Absolute repo root so Keystatic resolves `src/content/posts/*` the same locally and on Vercel. */
+const repoRoot = path.join(process.cwd(), "");
+
+const reader = createReader(repoRoot, keystaticConfig);
 
 export type Category =
   | "Buying Guides"
@@ -144,17 +150,46 @@ async function toPost(slug: string, entry: ResolvedPostEntry): Promise<Post> {
 }
 
 export async function getAllPosts(): Promise<Post[]> {
-  const slugs = await reader.collections.posts.list();
-  const entries = await Promise.all(
-    slugs.map(async (slug) => {
-      const entry = await reader.collections.posts.read(slug, { resolveLinkedFiles: true });
-      if (!entry) return null;
-      return await toPost(slug, entry);
-    }),
-  );
-  return entries
-    .filter((post): post is Post => post !== null)
-    .sort((a, b) => new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime());
+  const postsDir = path.join(repoRoot, "src", "content", "posts");
+  try {
+    const slugs = await reader.collections.posts.list();
+    const entries = await Promise.all(
+      slugs.map(async (slug) => {
+        try {
+          const entry = await reader.collections.posts.read(slug, { resolveLinkedFiles: true });
+          if (!entry) return null;
+          return await toPost(slug, entry);
+        } catch (err) {
+          console.error(`[watchdecode:posts] Failed to read post slug=${JSON.stringify(slug)}`, err);
+          return null;
+        }
+      }),
+    );
+    const posts = entries
+      .filter((post): post is Post => post !== null)
+      .sort((a, b) => new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime());
+
+    console.info(
+      `[watchdecode:posts] Keystatic list: ${slugs.length} slug(s), resolved: ${posts.length} post(s); repoRoot=${repoRoot}`,
+    );
+    if (slugs.length === 0) {
+      console.warn(
+        `[watchdecode:posts] No post slugs from Keystatic. postsDir exists=${existsSync(postsDir)} path=${postsDir}`,
+      );
+    } else if (posts.length === 0) {
+      console.warn(
+        `[watchdecode:posts] ${slugs.length} slug(s) listed but 0 posts resolved (read/parse failures).`,
+      );
+    }
+
+    return posts;
+  } catch (err) {
+    console.error(
+      `[watchdecode:posts] getAllPosts failed repoRoot=${repoRoot} postsDir exists=${existsSync(postsDir)}`,
+      err,
+    );
+    throw err;
+  }
 }
 
 export async function getFeaturedPosts(): Promise<Post[]> {
