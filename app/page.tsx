@@ -1,10 +1,13 @@
 import Link from "next/link";
 
 import { ArticleCard } from "@/src/components/article-card";
-import { getCategories, getFeaturedPosts } from "@/src/lib/posts";
+import { getAllPosts, getCategories, getFeaturedPosts } from "@/src/lib/posts";
 
 export default async function Home() {
+  const allPosts = await getAllPosts();
+  const latestPosts = allPosts.slice(0, 4);
   const featuredPosts = await getFeaturedPosts();
+  const featuredDisplay = featuredPosts.slice(0, 4);
   const categories = await getCategories();
 
   return (
@@ -37,18 +40,46 @@ export default async function Home() {
       </section>
 
       <section className="container-shell mt-20">
-        <div className="mb-8 flex items-end justify-between">
-          <h2 className="section-title">Featured Articles</h2>
-          <Link href="/blog" className="text-sm text-zinc-700 hover:text-zinc-900">
-            View all
-          </Link>
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <h2 className="section-title">Latest Posts</h2>
         </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {featuredPosts.map((post) => (
-            <ArticleCard key={post.slug} post={post} />
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {latestPosts.map((post, index) => (
+            <ArticleCard key={post.slug} post={post} index={index} />
           ))}
         </div>
+        <div className="mt-10 flex justify-center">
+          <Link
+            href="/blog"
+            className="rounded-full border border-zinc-200 bg-white px-6 py-2.5 text-sm font-medium text-zinc-900 transition hover:border-zinc-300 hover:bg-zinc-50"
+          >
+            View All Posts
+          </Link>
+        </div>
       </section>
+
+      {featuredPosts.length > 0 ? (
+        <section className="container-shell mt-20">
+          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h2 className="section-title">Featured Posts</h2>
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {featuredDisplay.map((post, index) => (
+              <ArticleCard key={post.slug} post={post} index={index} />
+            ))}
+          </div>
+          {featuredPosts.length > 4 ? (
+            <div className="mt-10 flex justify-center">
+              <Link
+                href="/blog?featured=true"
+                className="rounded-full border border-zinc-200 bg-white px-6 py-2.5 text-sm font-medium text-zinc-900 transition hover:border-zinc-300 hover:bg-zinc-50"
+              >
+                View All Featured
+              </Link>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       <section className="container-shell mt-20">
         <h2 className="section-title">Categories</h2>

@@ -144,3 +144,34 @@ export function isValidCategory(value: string): value is Category {
     value === "Watch Care"
   );
 }
+
+/** Decode query-string category values (+ for space, %20, etc.) and validate against Keystatic options. */
+function decodeQueryParam(raw: string): string {
+  try {
+    return decodeURIComponent(raw.replace(/\+/g, " ")).trim();
+  } catch {
+    return raw.trim();
+  }
+}
+
+/**
+ * Resolves Next.js App Router searchParams (string or string[]) to a single Category.
+ * Use this for `?category=` so filtering matches Keystatic frontmatter exactly.
+ */
+export function parseCategoryQueryParam(
+  value: string | string[] | undefined,
+): Category | undefined {
+  if (value === undefined) return undefined;
+  const first = Array.isArray(value) ? value[0] : value;
+  if (typeof first !== "string" || first.length === 0) return undefined;
+  const decoded = decodeQueryParam(first);
+  return isValidCategory(decoded) ? decoded : undefined;
+}
+
+export function parseFeaturedQueryParam(value: string | string[] | undefined): boolean {
+  if (value === undefined) return false;
+  const first = Array.isArray(value) ? value[0] : value;
+  if (typeof first !== "string") return false;
+  const v = first.toLowerCase();
+  return v === "true" || v === "1" || v === "yes";
+}
