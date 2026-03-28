@@ -72,6 +72,50 @@ async function resolveMdxSource(content: string | (() => Promise<string>)): Prom
   return typeof content === "string" ? content : await content();
 }
 
+/**
+ * Keystatic `fields.select` is usually a string at runtime, but some versions
+ * or transforms may expose `{ value, label }`. Coerce to a plain string for comparisons.
+ */
+export function categoryFromKeystatic(raw: unknown): string {
+  if (typeof raw === "string") return raw;
+  if (raw && typeof raw === "object") {
+    if ("value" in raw && typeof (raw as { value: unknown }).value === "string") {
+      return (raw as { value: string }).value;
+    }
+    if ("label" in raw && typeof (raw as { label: unknown }).label === "string") {
+      return (raw as { label: string }).label;
+    }
+  }
+  return String(raw ?? "");
+}
+
+/** Strip BOM/invisible chars and normalize spacing so URL + frontmatter always compare equal. */
+export function normalizeCategoryLabel(input: string): string {
+  return input
+    .replace(/^\uFEFF/, "")
+    .normalize("NFKC")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+/** Map a stored or query string to the canonical Category option (case/spacing/unicode-safe). */
+export function resolveCanonicalCategory(input: string): Category | undefined {
+  const n = normalizeCategoryLabel(input);
+  for (const c of ALL_CATEGORIES) {
+    if (normalizeCategoryLabel(c) === n) return c;
+  }
+  return undefined;
+}
+
+/** Compares Keystatic-stored category text against the selected filter (canonical). */
+export function matchesCategory(postCategory: string, selected: Category): boolean {
+  const a = resolveCanonicalCategory(postCategory);
+  const b = resolveCanonicalCategory(selected);
+  if (a !== undefined && b !== undefined) return a === b;
+  return normalizeCategoryLabel(postCategory) === normalizeCategoryLabel(selected);
+}
+
 async function toPost(slug: string, entry: ResolvedPostEntry): Promise<Post> {
   const rawDate = entry.date as string | Date;
   const publishedAt =
@@ -79,6 +123,8 @@ async function toPost(slug: string, entry: ResolvedPostEntry): Promise<Post> {
   const rawTitle = entry.title as unknown as string | { name: string; slug: string };
   const title = typeof rawTitle === "string" ? rawTitle : rawTitle.name;
   const mdxSource = await resolveMdxSource(entry.content);
+  const rawCategory = categoryFromKeystatic(entry.category as unknown);
+  const category = resolveCanonicalCategory(rawCategory) ?? (rawCategory as Category);
 
   return {
     slug,
@@ -87,7 +133,7 @@ async function toPost(slug: string, entry: ResolvedPostEntry): Promise<Post> {
       description: entry.description,
       publishedAt,
       author: "WatchDecode",
-      category: entry.category as Category,
+      category,
       readTime: estimateReadTime(mdxSource),
       featured: entry.featured,
       affiliateLinks: (entry.affiliateLinks as AffiliateLink[] | undefined) ?? [],
@@ -134,15 +180,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 }
 
 export function isValidCategory(value: string): value is Category {
-  return (
-    value === "Buying Guides" ||
-    value === "Reviews" ||
-    value === "Comparisons" ||
-    value === "Watch Brands" ||
-    value === "Budget Picks" ||
-    value === "Luxury Watches" ||
-    value === "Watch Care"
-  );
+  return resolveCanonicalCategory(value) !== undefined;
 }
 
 /** Decode query-string category values (+ for space, %20, etc.) and validate against Keystatic options. */
@@ -165,7 +203,7 @@ export function parseCategoryQueryParam(
   const first = Array.isArray(value) ? value[0] : value;
   if (typeof first !== "string" || first.length === 0) return undefined;
   const decoded = decodeQueryParam(first);
-  return isValidCategory(decoded) ? decoded : undefined;
+  return resolveCanonicalCategory(decoded);
 }
 
 export function parseFeaturedQueryParam(value: string | string[] | undefined): boolean {

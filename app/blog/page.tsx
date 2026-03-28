@@ -5,6 +5,7 @@ import { ArticleCard } from "@/src/components/article-card";
 import {
   getAllPosts,
   getCategories,
+  matchesCategory,
   parseCategoryQueryParam,
   parseFeaturedQueryParam,
   type Category,
@@ -17,6 +18,9 @@ export const metadata: Metadata = {
     canonical: "/blog",
   },
 };
+
+/** Ensure query string (`?category=`) is always evaluated per request, not from a stale prerender. */
+export const dynamic = "force-dynamic";
 
 type BlogPageProps = {
   searchParams: Promise<{
@@ -32,10 +36,6 @@ function firstString(value: string | string[] | undefined): string | undefined {
   if (value === undefined) return undefined;
   const v = Array.isArray(value) ? value[0] : value;
   return typeof v === "string" ? v : undefined;
-}
-
-function matchesCategory(postCategory: string, selected: Category): boolean {
-  return postCategory.trim() === selected;
 }
 
 export default async function BlogPage({ searchParams }: BlogPageProps) {
