@@ -19,10 +19,10 @@ export default function ContactPage() {
         <div className="mt-8 rounded-xl border border-zinc-200 bg-zinc-100/60 p-6">
           <p className="text-sm uppercase tracking-wide text-zinc-600">Email</p>
           <a
-            href="mailto:hello@watchdecode.com"
+            href="mailto:watchdecode@gmail.com"
             className="mt-2 inline-block text-lg text-amber-700 hover:text-amber-600"
           >
-            hello@watchdecode.com
+            watchdecode@gmail.com
           </a>
         </div>
       </div>
